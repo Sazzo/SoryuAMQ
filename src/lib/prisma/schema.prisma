@@ -1,0 +1,49 @@
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+model Match {
+    id              String              @id @default(uuid())
+    serverId        String
+    channelId       String
+    state           MatchState          @default(PLAYING)
+    difficulty      MatchDifficulty
+    players         PlayerMatchRecord[]
+    rounds          Int                 @default(3)
+    roundsDuration  Int                 @default(30)
+    lastRoundAnswer Int?
+    createdAt       DateTime            @default(now())
+    updatedAt       DateTime            @updatedAt
+}
+
+model PlayerMatchRecord {
+    id        String   @id @default(uuid())
+    score     Int      @default(0)
+    player    Player   @relation(fields: [playerId], references: [id])
+    match     Match    @relation(fields: [matchId], references: [id])
+    playerId  String
+    matchId   String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+model Player {
+    id      String              @id
+    matches PlayerMatchRecord[]
+}
+
+enum MatchState {
+    PLAYING
+    FINISHED
+}
+
+enum MatchDifficulty {
+    EASY
+    MEDIUM
+    HARD
+}
