@@ -21,7 +21,7 @@ export class CreateMatchCommand extends Command {
 						.setRequired(true)
 						.addChoices({ name: 'Easy', value: 'EASY' }, { name: 'Medium', value: 'MEDIUM' }, { name: 'Hard', value: 'HARD' })
 				)
-				.addNumberOption((option) =>
+				.addIntegerOption((option) =>
 					option.setName('rounds').setDescription('Number of rounds.').setMinValue(3).setMaxValue(15).setRequired(true)
 				)
 				.addNumberOption((option) =>
