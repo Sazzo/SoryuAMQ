@@ -16,19 +16,13 @@ export interface GameMatchOptions {
 export class GameMatch {
 	public currentMatchRound: number = 1;
 
-	constructor(public matchChannelId: string, public userVoiceChannel: VoiceChannel, public gameOptions: GameMatchOptions) {
-		this.matchChannelId = matchChannelId;
-		this.userVoiceChannel = userVoiceChannel;
-		this.gameOptions = gameOptions;
-	}
+	constructor(public matchChannel: TextChannel, public userVoiceChannel: VoiceChannel, public gameOptions: GameMatchOptions) {}
 
 	public async startMatch() {
-		const matchChannel = container.client.channels.cache.get(this.matchChannelId) as TextChannel;
-
 		// Small trick to make typescript happy about the enum.
 		const difficulty = this.gameOptions.difficulty as keyof typeof MatchDifficulty;
 
-		matchChannel.send(`Populating anime themes pool for the match...`);
+		this.matchChannel.send(`Populating anime themes pool for the match...`);
 
 		const matchThemes = new Themes(difficulty, this.gameOptions.matchRounds);
 		const matchThemesPool = await matchThemes.populateThemesPoolByDifficulty();
@@ -39,26 +33,26 @@ export class GameMatch {
 		const match = await container.prisma.match.create({
 			data: {
 				difficulty,
-				channelId: this.matchChannelId,
+				channelId: this.matchChannel.id,
 				serverId: this.userVoiceChannel.guildId,
 				roundsDuration: this.gameOptions.roundsDuration,
 				rounds: this.gameOptions.matchRounds
 			}
 		});
 
-		matchChannel.send(`Populated anime themes pool for match **${match.id}**...`);
+		this.matchChannel.send(`Populated anime themes pool for match **${match.id}**...`);
 
 		while (this.gameOptions.matchRounds >= this.currentMatchRound) {
 			const roundThemeEntry = matchThemesPool.get(this.currentMatchRound);
 			if (!roundThemeEntry) throw new Error(`No theme found for round ${this.currentMatchRound}`);
 
-			await this.startRound(match.id, matchChannel, roundThemeEntry);
+			await this.startRound(match.id, roundThemeEntry);
 			console.log(this.currentMatchRound);
 		}
 	}
 
-	private async startRound(matchId: string, matchChannel: TextChannel, themesPoolEntry: ThemesPoolEntry) {
-		await matchChannel.send(`Starting round **${this.currentMatchRound}** of **${this.gameOptions.matchRounds}**`);
+	private async startRound(matchId: string, themesPoolEntry: ThemesPoolEntry) {
+		await this.matchChannel.send(`Starting round **${this.currentMatchRound}** of **${this.gameOptions.matchRounds}**`);
 
 		await container.prisma.match.update({
 			where: { id: matchId },
@@ -75,7 +69,7 @@ export class GameMatch {
 		});
 		await this.playThemeOnVoiceChannel(voiceConnection, themesPoolEntry.themeAudioUrl);
 
-		await matchChannel.send(
+		await this.matchChannel.send(
 			`:drum: The round ended! And the answer was...**${themesPoolEntry.title}** (AL ID: ${themesPoolEntry.id} | MAL ID: ${themesPoolEntry.malId})\n${themesPoolEntry.coverImage}`
 		);
 
@@ -92,11 +86,11 @@ export class GameMatch {
 
 			if (matchWinner) {
 				const matchWinnerMention = Formatters.userMention(matchWinner.playerId);
-				await matchChannel.send(
+				await this.matchChannel.send(
 					`<a:Yay:838419253655765052> The match is over! And the winner is...__${matchWinnerMention}__! (score: ${matchWinner.score})\nThanks for playing! You can start another match with </creatematch:1013228111275511848>`
 				);
 			} else {
-				await matchChannel.send(
+				await this.matchChannel.send(
 					`<a:Yay:838419253655765052> The match is over! Sadly, I couldn't find a winner.\nThanks for playing! You can start another match with </creatematch:1013228111275511848>`
 				);
 			}

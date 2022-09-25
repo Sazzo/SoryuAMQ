@@ -18,9 +18,7 @@ export class Themes {
 	private anilist: Anilist = new Anilist();
 	private matchThemesPool: Collection<number, ThemesPoolEntry> = new Collection();
 
-	constructor(private difficulty: MatchDifficulty, private matchRounds: number) {
-		this.difficulty = difficulty;
-	}
+	constructor(private difficulty: MatchDifficulty, private matchRounds: number) {}
 
 	public async populateThemesPoolByDifficulty() {
 		switch (this.difficulty) {

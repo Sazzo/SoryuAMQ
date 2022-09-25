@@ -1,6 +1,6 @@
 import { ApplyOptions } from '@sapphire/decorators';
 import { Command } from '@sapphire/framework';
-import type { VoiceChannel } from 'discord.js';
+import type { GuildMember, TextChannel, VoiceChannel } from 'discord.js';
 import { GameMatch } from '../lib/game/match';
 
 @ApplyOptions<Command.Options>({
@@ -36,10 +36,10 @@ export class CreateMatchCommand extends Command {
 	}
 
 	public async chatInputRun(interaction: Command.ChatInputInteraction) {
-		const guildMember = interaction.guild?.members.cache.get(interaction.user.id)!;
-		const voiceChannel = this.container.client.channels.cache.get(guildMember.voice.channelId!)! as VoiceChannel;
+		const guildMember = interaction.member as GuildMember;
+		const voiceChannel = guildMember.voice.channel as VoiceChannel;
 
-		const gameMatch = new GameMatch(interaction.channelId, voiceChannel, {
+		const gameMatch = new GameMatch(interaction.channel as TextChannel, voiceChannel, {
 			matchRounds: interaction.options.getNumber('rounds')!,
 			roundsDuration: interaction.options.getNumber('round_duration')!,
 			difficulty: interaction.options.getString('difficulty')!
