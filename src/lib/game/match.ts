@@ -49,7 +49,7 @@ export class GameMatch {
 		matchChannel.send(`Populated anime themes pool for match **${match.id}**...`);
 
 		while (this.gameOptions.matchRounds >= this.currentMatchRound) {
-			const roundThemeEntry = matchThemesPool.get(this.currentMatchRound);
+			const roundThemeEntry = matchThemesPool[this.currentMatchRound - 1];
 			if (!roundThemeEntry) throw new Error(`No theme found for round ${this.currentMatchRound}`);
 
 			await this.startRound(match.id, matchChannel, roundThemeEntry);
