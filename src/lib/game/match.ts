@@ -16,7 +16,11 @@ export interface GameMatchOptions {
 export class GameMatch {
 	public currentMatchRound: number = 1;
 
-	constructor(public matchChannelId: string, public userVoiceChannel: VoiceChannel, public gameOptions: GameMatchOptions) {
+	constructor(
+		public readonly matchChannelId: string,
+		public readonly userVoiceChannel: VoiceChannel,
+		public readonly gameOptions: GameMatchOptions
+	) {
 		this.matchChannelId = matchChannelId;
 		this.userVoiceChannel = userVoiceChannel;
 		this.gameOptions = gameOptions;
