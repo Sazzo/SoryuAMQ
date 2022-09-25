@@ -26,8 +26,6 @@ export function pickNumberBetween(min: number, max: number) {
 	return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-export const truncate = (str: string, n: number) => (str.length > n ? str.substr(0, n - 1) + '...' : str);
-
 /**
  * Sends a loading message to the current channel
  * @param message The message data for which to send the loading message

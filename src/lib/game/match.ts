@@ -2,6 +2,7 @@ import { createAudioPlayer, createAudioResource, joinVoiceChannel, VoiceConnecti
 import { MatchDifficulty, MatchState } from '@prisma/client';
 import { fetch, FetchResultTypes } from '@sapphire/fetch';
 import { container } from '@sapphire/framework';
+import { Time } from '@sapphire/time-utilities';
 import { Formatters, TextChannel, VoiceChannel } from 'discord.js';
 import { Readable } from 'stream';
 
@@ -133,7 +134,7 @@ export class GameMatch {
 				playerSubscription.unsubscribe();
 
 				resolve();
-			}, this.gameOptions.roundsDuration * 1000);
+			}, this.gameOptions.roundsDuration * Time.Second);
 		});
 	}
 }
