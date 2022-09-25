@@ -5,8 +5,9 @@ node_modules/
 *.iml
 
 # Yarn files
-.yarn/install-state.gz
-.yarn/build-state.yml
+.yarn/*
+!.yarn/releases
+!.yarn/plugins
 
 # Environment variables
 .DS_Store
