@@ -133,7 +133,7 @@ export class GameMatch {
 		const themeAudioResource = createAudioResource(Readable.from(themeAudioBuffer));
 		player.play(themeAudioResource);
     
-    await setTimeout(this.gameOptions.roundsDuration * Time.Second);
+    		await setTimeout(this.gameOptions.roundsDuration * Time.Second);
 		player.stop();
 		playerSubscription.unsubscribe();
 	}
