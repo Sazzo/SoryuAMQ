@@ -2,6 +2,7 @@ import { createAudioPlayer, createAudioResource, joinVoiceChannel, VoiceConnecti
 import { MatchDifficulty, MatchState } from '@prisma/client';
 import { fetch, FetchResultTypes } from '@sapphire/fetch';
 import { container } from '@sapphire/framework';
+import { Time } from '@sapphire/time-utilities';
 import { Formatters, TextChannel, VoiceChannel } from 'discord.js';
 import { Readable } from 'stream';
 import { setTimeout } from 'timers/promises';
@@ -131,8 +132,8 @@ export class GameMatch {
 		const themeAudioBuffer = await fetch(themeAudioUrl, FetchResultTypes.Buffer);
 		const themeAudioResource = createAudioResource(Readable.from(themeAudioBuffer));
 		player.play(themeAudioResource);
-
-		await setTimeout(this.gameOptions.roundsDuration * 1000);
+    
+    		await setTimeout(this.gameOptions.roundsDuration * Time.Second);
 		player.stop();
 		playerSubscription.unsubscribe();
 	}

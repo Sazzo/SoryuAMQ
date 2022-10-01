@@ -1,9 +1,9 @@
 import { MatchState } from '@prisma/client';
 import { ApplyOptions } from '@sapphire/decorators';
 import { Command } from '@sapphire/framework';
+import { cutText } from '@sapphire/utilities';
 import Anilist from 'anilist-node';
 import { AutocompleteInteraction, Formatters } from 'discord.js';
-import { truncate } from '../lib/utils/utils';
 
 @ApplyOptions<Command.Options>({
 	description: 'Send a answer to an ongoing guess the anime match.',
@@ -100,7 +100,7 @@ export class SendAnswerCommand extends Command {
 
 		return interaction.respond(
 			anilistSearchResult.media.map((anime) => {
-				const animeTitle = anime.title.english ? truncate(anime.title.english, 80) : truncate(anime.title.romaji, 80);
+				const animeTitle = anime.title.english ? cutText(anime.title.english, 80) : cutText(anime.title.romaji, 80);
 
 				return {
 					name: animeTitle,
