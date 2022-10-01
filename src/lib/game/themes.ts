@@ -15,8 +15,8 @@ export interface ThemesPoolEntry {
 }
 
 export class Themes {
-	private readonly anilist: Anilist = new Anilist();
-	private readonly matchThemesPool: Collection<number, ThemesPoolEntry> = new Collection();
+	private readonly anilist = new Anilist();
+	private readonly matchThemesPool: ThemesPoolEntry[] = [];
 
 	constructor(private readonly difficulty: MatchDifficulty, private readonly matchRounds: number) {
 		this.difficulty = difficulty;
@@ -25,7 +25,7 @@ export class Themes {
 	public async populateThemesPoolByDifficulty() {
 		switch (this.difficulty) {
 			case MatchDifficulty.EASY: {
-				for (let i = 0; i < this.matchRounds; ) {
+				while (this.matchThemesPool.length < this.matchRounds) {
 					const page = pickNumberBetween(1, 4);
 					const popularAnimes = await this.anilist.searchEntry.anime(
 						undefined,
@@ -54,8 +54,7 @@ export class Themes {
 					if (isThemeAlreadyOnPool) continue;
 					console.log(`${themeAudioUrl} - not on pool`);
 
-					const matchThemePoolEntryId = this.matchThemesPool.size + 1;
-					this.matchThemesPool.set(matchThemePoolEntryId, {
+					this.matchThemesPool.push({
 						id: selectedAnimeData.id,
 						malId: selectedAnimeData.idMal,
 						title: selectedAnimeData.title.english,
@@ -63,8 +62,6 @@ export class Themes {
 						coverImage: selectedAnimeData.coverImage.large,
 						themeAudioUrl: themeAudioUrl
 					});
-
-					i++; // We only gonna increment i if we successfully added a theme to the pool.
 				}
 
 				return this.matchThemesPool;
