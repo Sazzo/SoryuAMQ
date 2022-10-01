@@ -2,8 +2,10 @@ import { createAudioPlayer, createAudioResource, joinVoiceChannel, VoiceConnecti
 import { MatchDifficulty, MatchState } from '@prisma/client';
 import { fetch, FetchResultTypes } from '@sapphire/fetch';
 import { container } from '@sapphire/framework';
+import { Time } from '@sapphire/time-utilities';
 import { Formatters, TextChannel, VoiceChannel } from 'discord.js';
 import { Readable } from 'stream';
+import { setTimeout } from 'timers/promises';
 
 import { Themes, ThemesPoolEntry } from './themes';
 
@@ -16,7 +18,11 @@ export interface GameMatchOptions {
 export class GameMatch {
 	public currentMatchRound: number = 1;
 
-	constructor(public matchChannelId: string, public userVoiceChannel: VoiceChannel, public gameOptions: GameMatchOptions) {
+	constructor(
+		public readonly matchChannelId: string,
+		public readonly userVoiceChannel: VoiceChannel,
+		public readonly gameOptions: GameMatchOptions
+	) {
 		this.matchChannelId = matchChannelId;
 		this.userVoiceChannel = userVoiceChannel;
 		this.gameOptions = gameOptions;
@@ -116,24 +122,19 @@ export class GameMatch {
 		return matchWinner;
 	}
 
-	private playThemeOnVoiceChannel(connection: VoiceConnection, themeAudioUrl: string) {
-		return new Promise<void>(async (resolve) => {
-			const player = createAudioPlayer();
-			player.on('error', (error) => console.error(error));
-			connection.on('error', (error) => console.error(error));
+	private async playThemeOnVoiceChannel(connection: VoiceConnection, themeAudioUrl: string) {
+		const player = createAudioPlayer();
+		player.on('error', (error) => console.error(error));
+		connection.on('error', (error) => console.error(error));
 
-			const playerSubscription = connection.subscribe(player)!;
+		const playerSubscription = connection.subscribe(player)!;
 
-			const themeAudioBuffer = await fetch(themeAudioUrl, FetchResultTypes.Buffer);
-			const themeAudioResource = createAudioResource(Readable.from(themeAudioBuffer));
-			player.play(themeAudioResource);
-
-			setTimeout(() => {
-				player.stop();
-				playerSubscription.unsubscribe();
-
-				resolve();
-			}, this.gameOptions.roundsDuration * 1000);
-		});
+		const themeAudioBuffer = await fetch(themeAudioUrl, FetchResultTypes.Buffer);
+		const themeAudioResource = createAudioResource(Readable.from(themeAudioBuffer));
+		player.play(themeAudioResource);
+    
+    		await setTimeout(this.gameOptions.roundsDuration * Time.Second);
+		player.stop();
+		playerSubscription.unsubscribe();
 	}
 }
