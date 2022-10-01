@@ -10,6 +10,8 @@ import { AutocompleteInteraction, Formatters } from 'discord.js';
 	preconditions: ['InVoiceChannel']
 })
 export class SendAnswerCommand extends Command {
+	private readonly anilist = new Anilist();
+
 	public override registerApplicationCommands(registry: Command.Registry) {
 		registry.registerChatInputCommand((builder) =>
 			builder
@@ -94,8 +96,7 @@ export class SendAnswerCommand extends Command {
 			`https://api.jikan.moe/v4/anime?q=${focusedOption.value}&limit=10`,
 			FetchResultTypes.JSON
 		); */
-		const anilist = new Anilist();
-		const anilistSearchResult = await anilist.searchEntry.anime(focusedOption.value, {}, 1, 10);
+		const anilistSearchResult = await this.anilist.searchEntry.anime(focusedOption.value, {}, 1, 10);
 
 		return interaction.respond(
 			anilistSearchResult.media.map((anime) => {

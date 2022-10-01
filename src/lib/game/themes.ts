@@ -15,10 +15,10 @@ export interface ThemesPoolEntry {
 }
 
 export class Themes {
-	private anilist: Anilist = new Anilist();
-	private matchThemesPool: Collection<number, ThemesPoolEntry> = new Collection();
+	private readonly anilist: Anilist = new Anilist();
+	private readonly matchThemesPool: Collection<number, ThemesPoolEntry> = new Collection();
 
-	constructor(private difficulty: MatchDifficulty, private matchRounds: number) {
+	constructor(private readonly difficulty: MatchDifficulty, private readonly matchRounds: number) {
 		this.difficulty = difficulty;
 	}
 
